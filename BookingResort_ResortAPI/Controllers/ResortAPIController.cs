@@ -1,4 +1,5 @@
 ﻿using BookingResort_ResortAPI.Models;
+using BookingResort_ResortAPI.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingResort_ResortAPI.Controllers
@@ -8,11 +9,11 @@ namespace BookingResort_ResortAPI.Controllers
 	public class ResortAPIController : ControllerBase
 	{
 		[HttpGet]
-		public IEnumerable<Resort> GetResorts()
+		public IEnumerable<ResortDTO> GetResorts()
 		{ 
-			return new List<Resort> { 
-				new Resort{ Id = 1, Name = "Pool View"},
-				new Resort{ Id = 2, Name = "Beach View"}
+			return new List<ResortDTO> { 
+				new ResortDTO{ Id = 1, Name = "Pool View"},
+				new ResortDTO{ Id = 2, Name = "Beach View"}
 			};
 		}
 	}
