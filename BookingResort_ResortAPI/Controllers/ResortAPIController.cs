@@ -14,5 +14,11 @@ namespace BookingResort_ResortAPI.Controllers
 		{
 			return ResortStore.resortList;
 		}
+
+		[HttpGet("id:int")]
+		public ResortDTO GetResort(int id)
+		{
+			return ResortStore.resortList.FirstOrDefault(u=>u.Id==id);
+		}
 	}
 }
