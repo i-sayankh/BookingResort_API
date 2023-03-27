@@ -1,4 +1,5 @@
-﻿using BookingResort_ResortAPI.Models;
+﻿using BookingResort_ResortAPI.Data;
+using BookingResort_ResortAPI.Models;
 using BookingResort_ResortAPI.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,11 +11,8 @@ namespace BookingResort_ResortAPI.Controllers
 	{
 		[HttpGet]
 		public IEnumerable<ResortDTO> GetResorts()
-		{ 
-			return new List<ResortDTO> { 
-				new ResortDTO{ Id = 1, Name = "Pool View"},
-				new ResortDTO{ Id = 2, Name = "Beach View"}
-			};
+		{
+			return ResortStore.resortList;
 		}
 	}
 }
