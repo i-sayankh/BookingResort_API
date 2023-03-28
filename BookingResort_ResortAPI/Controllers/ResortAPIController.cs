@@ -10,15 +10,24 @@ namespace BookingResort_ResortAPI.Controllers
 	public class ResortAPIController : ControllerBase
 	{
 		[HttpGet]
-		public IEnumerable<ResortDTO> GetResorts()
+		public ActionResult<IEnumerable<ResortDTO>> GetResorts()
 		{
-			return ResortStore.resortList;
+			return Ok(ResortStore.resortList);
 		}
 
 		[HttpGet("id:int")]
-		public ResortDTO GetResort(int id)
+		public ActionResult<ResortDTO> GetResort(int id)
 		{
-			return ResortStore.resortList.FirstOrDefault(u=>u.Id==id);
+			if(id==0)
+			{
+				return BadRequest();
+			}
+			var resort = ResortStore.resortList.FirstOrDefault(u => u.Id == id);
+			if (resort == null)
+			{
+				return NotFound();
+			}
+			return Ok(resort);
 		}
 	}
 }
