@@ -16,7 +16,7 @@ namespace BookingResort_ResortAPI.Controllers
 			return Ok(ResortStore.resortList);
 		}
 
-		[HttpGet("id:int")]
+		[HttpGet("id:int", Name ="GetResort")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -36,7 +36,7 @@ namespace BookingResort_ResortAPI.Controllers
 		}
 
 		[HttpPost]
-		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public ActionResult<ResortDTO> CreateResort([FromBody]ResortDTO resort)
@@ -52,7 +52,7 @@ namespace BookingResort_ResortAPI.Controllers
 			resort.Id = ResortStore.resortList.OrderByDescending(u=>u.Id).FirstOrDefault().Id+1;
 			ResortStore.resortList.Add(resort);
 
-			return Ok(resort);
+			return CreatedAtRoute("GetResort", new { id = resort.Id }, resort);
 		}
 	}
 }
