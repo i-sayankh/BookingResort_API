@@ -34,5 +34,25 @@ namespace BookingResort_ResortAPI.Controllers
 			}
 			return Ok(resort);
 		}
+
+		[HttpPost]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public ActionResult<ResortDTO> CreateResort([FromBody]ResortDTO resort)
+		{
+			if(resort == null)
+			{
+				return BadRequest(resort);
+			}
+			if(resort.Id > 0)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError);
+			}
+			resort.Id = ResortStore.resortList.OrderByDescending(u=>u.Id).FirstOrDefault().Id+1;
+			ResortStore.resortList.Add(resort);
+
+			return Ok(resort);
+		}
 	}
 }
