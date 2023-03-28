@@ -10,12 +10,17 @@ namespace BookingResort_ResortAPI.Controllers
 	public class ResortAPIController : ControllerBase
 	{
 		[HttpGet]
+		[ProducesResponseType(StatusCodes.Status200OK)]
 		public ActionResult<IEnumerable<ResortDTO>> GetResorts()
 		{
 			return Ok(ResortStore.resortList);
 		}
 
 		[HttpGet("id:int")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		//[ProducesResponseType(200, Type = typeof(ResortDTO))]		
 		public ActionResult<ResortDTO> GetResort(int id)
 		{
 			if(id==0)
