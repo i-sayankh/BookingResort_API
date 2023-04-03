@@ -1,6 +1,7 @@
 ﻿using BookingResort_ResortAPI.Data;
 using BookingResort_ResortAPI.Models;
 using BookingResort_ResortAPI.Models.DTO;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingResort_ResortAPI.Controllers
@@ -16,14 +17,14 @@ namespace BookingResort_ResortAPI.Controllers
 			return Ok(ResortStore.resortList);
 		}
 
-		[HttpGet("{id:int}", Name ="GetResort")]
+		[HttpGet("{id:int}", Name = "GetResort")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		//[ProducesResponseType(200, Type = typeof(ResortDTO))]		
 		public ActionResult<ResortDTO> GetResort(int id)
 		{
-			if(id==0)
+			if (id == 0)
 			{
 				return BadRequest();
 			}
@@ -39,28 +40,28 @@ namespace BookingResort_ResortAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public ActionResult<ResortDTO> CreateResort([FromBody]ResortDTO resortDTO)
+		public ActionResult<ResortDTO> CreateResort([FromBody] ResortDTO resortDTO)
 		{
-			if (ResortStore.resortList.FirstOrDefault(u => u.Name.ToLower() == resortDTO.Name.ToLower())!=null) 
+			if (ResortStore.resortList.FirstOrDefault(u => u.Name.ToLower() == resortDTO.Name.ToLower()) != null)
 			{
 				ModelState.AddModelError("customError", "Resort Already Exists!!");
 				return BadRequest(ModelState);
 			}
-			if(resortDTO == null)
+			if (resortDTO == null)
 			{
 				return BadRequest(resortDTO);
 			}
-			if(resortDTO.Id > 0)
+			if (resortDTO.Id > 0)
 			{
 				return StatusCode(StatusCodes.Status500InternalServerError);
 			}
-			resortDTO.Id = ResortStore.resortList.OrderByDescending(u=>u.Id).FirstOrDefault().Id+1;
+			resortDTO.Id = ResortStore.resortList.OrderByDescending(u => u.Id).FirstOrDefault().Id + 1;
 			ResortStore.resortList.Add(resortDTO);
 
 			return CreatedAtRoute("GetResort", new { id = resortDTO.Id }, resortDTO);
 		}
 
-		[HttpDelete("{id:int}", Name ="DeleteResort")]
+		[HttpDelete("{id:int}", Name = "DeleteResort")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -71,7 +72,7 @@ namespace BookingResort_ResortAPI.Controllers
 				return BadRequest();
 			}
 			var resort = ResortStore.resortList.FirstOrDefault(u => u.Id == id);
-			if(resort == null)
+			if (resort == null)
 			{
 				return NotFound();
 			}
@@ -82,9 +83,9 @@ namespace BookingResort_ResortAPI.Controllers
 		[HttpPut("{id:int}", Name = "UpdateResort")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public IActionResult UpdateResort(int id, [FromBody]ResortDTO resortDTO)
+		public IActionResult UpdateResort(int id, [FromBody] ResortDTO resortDTO)
 		{
-			if(resortDTO == null || id != resortDTO.Id)
+			if (resortDTO == null || id != resortDTO.Id)
 			{
 				return BadRequest();
 			}
@@ -92,6 +93,28 @@ namespace BookingResort_ResortAPI.Controllers
 			resort.Name = resortDTO.Name;
 			resort.Sqft = resortDTO.Sqft;
 			resort.Occupancy = resortDTO.Occupancy;
+			return NoContent();
+		}
+
+		[HttpPatch("{id:int}", Name = "UpdatePartialResort")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public IActionResult UpdatePartialVilla(int id, JsonPatchDocument<ResortDTO> patchDTO)
+		{
+			if (patchDTO == null || id == 0)
+			{
+				return BadRequest();
+			}
+			var resort = ResortStore.resortList.FirstOrDefault(u => u.Id == id);
+			if(resort == null)
+			{
+				return BadRequest();
+			}
+			patchDTO.ApplyTo(resort, ModelState);
+			if (!ModelState.IsValid)
+			{
+				return BadRequest();
+			}
 			return NoContent();
 		}
 	}
