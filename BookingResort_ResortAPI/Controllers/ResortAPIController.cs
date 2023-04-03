@@ -78,5 +78,21 @@ namespace BookingResort_ResortAPI.Controllers
 			ResortStore.resortList.Remove(resort);
 			return NoContent();
 		}
+
+		[HttpPut("{id:int}", Name = "UpdateResort")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public IActionResult UpdateResort(int id, [FromBody]ResortDTO resortDTO)
+		{
+			if(resortDTO == null || id != resortDTO.Id)
+			{
+				return BadRequest();
+			}
+			var resort = ResortStore.resortList.FirstOrDefault(u => u.Id == id);
+			resort.Name = resortDTO.Name;
+			resort.Sqft = resortDTO.Sqft;
+			resort.Occupancy = resortDTO.Occupancy;
+			return NoContent();
+		}
 	}
 }
