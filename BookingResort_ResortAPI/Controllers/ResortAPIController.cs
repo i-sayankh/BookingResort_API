@@ -16,7 +16,7 @@ namespace BookingResort_ResortAPI.Controllers
 			return Ok(ResortStore.resortList);
 		}
 
-		[HttpGet("id:int", Name ="GetResort")]
+		[HttpGet("{id:int}", Name ="GetResort")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -58,6 +58,25 @@ namespace BookingResort_ResortAPI.Controllers
 			ResortStore.resortList.Add(resortDTO);
 
 			return CreatedAtRoute("GetResort", new { id = resortDTO.Id }, resortDTO);
+		}
+
+		[HttpDelete("{id:int}", Name ="DeleteResort")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public IActionResult DeleteResort(int id)
+		{
+			if (id == 0)
+			{
+				return BadRequest();
+			}
+			var resort = ResortStore.resortList.FirstOrDefault(u => u.Id == id);
+			if(resort == null)
+			{
+				return NotFound();
+			}
+			ResortStore.resortList.Remove(resort);
+			return NoContent();
 		}
 	}
 }
