@@ -113,7 +113,7 @@ namespace BookingResort_ResortAPI.Controllers
 			patchDTO.ApplyTo(resort, ModelState);
 			if (!ModelState.IsValid)
 			{
-				return BadRequest();
+				return BadRequest(ModelState);
 			}
 			return NoContent();
 		}
