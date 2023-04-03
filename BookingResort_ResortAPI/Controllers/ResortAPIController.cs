@@ -39,20 +39,25 @@ namespace BookingResort_ResortAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public ActionResult<ResortDTO> CreateResort([FromBody]ResortDTO resort)
+		public ActionResult<ResortDTO> CreateResort([FromBody]ResortDTO resortDTO)
 		{
-			if(resort == null)
+			if (ResortStore.resortList.FirstOrDefault(u => u.Name.ToLower() == resortDTO.Name.ToLower())!=null) 
 			{
-				return BadRequest(resort);
+				ModelState.AddModelError("customError", "Resort Already Exists!!");
+				return BadRequest(ModelState);
 			}
-			if(resort.Id > 0)
+			if(resortDTO == null)
+			{
+				return BadRequest(resortDTO);
+			}
+			if(resortDTO.Id > 0)
 			{
 				return StatusCode(StatusCodes.Status500InternalServerError);
 			}
-			resort.Id = ResortStore.resortList.OrderByDescending(u=>u.Id).FirstOrDefault().Id+1;
-			ResortStore.resortList.Add(resort);
+			resortDTO.Id = ResortStore.resortList.OrderByDescending(u=>u.Id).FirstOrDefault().Id+1;
+			ResortStore.resortList.Add(resortDTO);
 
-			return CreatedAtRoute("GetResort", new { id = resort.Id }, resort);
+			return CreatedAtRoute("GetResort", new { id = resortDTO.Id }, resortDTO);
 		}
 	}
 }
