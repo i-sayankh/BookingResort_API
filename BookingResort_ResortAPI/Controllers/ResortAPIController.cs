@@ -104,7 +104,7 @@ namespace BookingResort_ResortAPI.Controllers
 		[HttpPatch("{id:int}", Name = "UpdatePartialResort")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public IActionResult UpdatePartialVilla(int id, JsonPatchDocument<ResortDTO> patchDTO)
+		public IActionResult UpdatePartialResort(int id, JsonPatchDocument<ResortDTO> patchDTO)
 		{
 			if (patchDTO == null || id == 0)
 			{
