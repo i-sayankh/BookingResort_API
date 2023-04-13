@@ -10,18 +10,15 @@ namespace BookingResort_ResortAPI.Controllers
 	[ApiController]
 	public class ResortAPIController : ControllerBase
 	{
-		private ILogger<ResortAPIController> _logger;
-
-		public ResortAPIController(ILogger<ResortAPIController> logger)
+		public ResortAPIController()
 		{
-			_logger = logger;
+			
 		}
 
 		[HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public ActionResult<IEnumerable<ResortDTO>> GetResorts()
 		{
-			_logger.LogInformation("Getting All Resorts");
 			return Ok(ResortStore.resortList);
 		}
 
@@ -34,7 +31,6 @@ namespace BookingResort_ResortAPI.Controllers
 		{
 			if (id == 0)
 			{
-				_logger.LogError("Get Resort Error with ID: " + id);
 				return BadRequest();
 			}
 			var resort = ResortStore.resortList.FirstOrDefault(u => u.Id == id);
