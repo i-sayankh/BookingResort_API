@@ -3,6 +3,7 @@ using BookingResort_ResortAPI.Models;
 using BookingResort_ResortAPI.Models.DTO;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookingResort_ResortAPI.Controllers
 {
@@ -137,7 +138,7 @@ namespace BookingResort_ResortAPI.Controllers
 			{
 				return BadRequest();
 			}
-			var resort = _db.Resorts.FirstOrDefault(u => u.Id == id);
+			var resort = _db.Resorts.AsNoTracking().FirstOrDefault(u => u.Id == id);
 
 			ResortDTO resortDTO = new ResortDTO()
 			{
