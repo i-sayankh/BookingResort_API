@@ -19,9 +19,9 @@ namespace BookingResort_ResortAPI.Controllers
 
 		[HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		public ActionResult<IEnumerable<ResortDTO>> GetResorts()
+		public async Task<ActionResult<IEnumerable<ResortDTO>>> GetResorts()
 		{
-			return Ok(_db.Resorts.ToList());
+			return Ok(await _db.Resorts.ToListAsync());
 		}
 
 		[HttpGet("{id:int}", Name = "GetResort")]
@@ -29,13 +29,13 @@ namespace BookingResort_ResortAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		//[ProducesResponseType(200, Type = typeof(ResortDTO))]		
-		public ActionResult<ResortDTO> GetResort(int id)
+		public async Task<ActionResult<ResortDTO>> GetResort(int id)
 		{
 			if (id == 0)
 			{
 				return BadRequest();
 			}
-			var resort = _db.Resorts.FirstOrDefault(u => u.Id == id);
+			var resort = await _db.Resorts.FirstOrDefaultAsync(u => u.Id == id);
 			if (resort == null)
 			{
 				return NotFound();
@@ -47,9 +47,9 @@ namespace BookingResort_ResortAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public ActionResult<ResortDTO> CreateResort([FromBody] ResortCreateDTO resortDTO)
+		public async Task<ActionResult<ResortDTO>> CreateResort([FromBody] ResortCreateDTO resortDTO)
 		{
-			if (_db.Resorts.FirstOrDefault(u => u.Name.ToLower() == resortDTO.Name.ToLower()) != null)
+			if (await _db.Resorts.FirstOrDefaultAsync(u => u.Name.ToLower() == resortDTO.Name.ToLower()) != null)
 			{
 				ModelState.AddModelError("customError", "Resort Already Exists!!");
 				return BadRequest(ModelState);
@@ -72,8 +72,8 @@ namespace BookingResort_ResortAPI.Controllers
 				Rate = resortDTO.Rate,
 				Sqft = resortDTO.Sqft
 			};
-			_db.Resorts.Add(model);
-			_db.SaveChanges();
+			await _db.Resorts.AddAsync(model);
+			await _db.SaveChangesAsync();
 
 			return CreatedAtRoute("GetResort", new { id = model.Id }, model);
 		}
@@ -82,26 +82,26 @@ namespace BookingResort_ResortAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public IActionResult DeleteResort(int id)
+		public async Task<IActionResult> DeleteResort(int id)
 		{
 			if (id == 0)
 			{
 				return BadRequest();
 			}
-			var resort = _db.Resorts.FirstOrDefault(u => u.Id == id);
+			var resort = await _db.Resorts.FirstOrDefaultAsync(u => u.Id == id);
 			if (resort == null)
 			{
 				return NotFound();
 			}
 			_db.Resorts.Remove(resort);
-			_db.SaveChanges();
+			await _db.SaveChangesAsync();
 			return NoContent();
 		}
 
 		[HttpPut("{id:int}", Name = "UpdateResort")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public IActionResult UpdateResort(int id, [FromBody] ResortUpdateDTO resortDTO)
+		public async Task<IActionResult> UpdateResort(int id, [FromBody] ResortUpdateDTO resortDTO)
 		{
 			if (resortDTO == null || id != resortDTO.Id)
 			{
@@ -124,20 +124,20 @@ namespace BookingResort_ResortAPI.Controllers
 				Sqft = resortDTO.Sqft
 			};
 			_db.Resorts.Update(model);
-			_db.SaveChanges();
+			await _db.SaveChangesAsync();
 			return NoContent();
 		}
 
 		[HttpPatch("{id:int}", Name = "UpdatePartialResort")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public IActionResult UpdatePartialResort(int id, JsonPatchDocument<ResortUpdateDTO> patchDTO)
+		public async Task<IActionResult> UpdatePartialResort(int id, JsonPatchDocument<ResortUpdateDTO> patchDTO)
 		{
 			if (patchDTO == null || id == 0)
 			{
 				return BadRequest();
 			}
-			var resort = _db.Resorts.AsNoTracking().FirstOrDefault(u => u.Id == id);
+			var resort = await _db.Resorts.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
 
 			ResortUpdateDTO resortDTO = new()
 			{
@@ -169,7 +169,7 @@ namespace BookingResort_ResortAPI.Controllers
 				Sqft = resortDTO.Sqft
 			};
 			_db.Resorts.Update(model);
-			_db.SaveChanges();
+			await _db.SaveChangesAsync();
 
 			if (!ModelState.IsValid)
 			{
