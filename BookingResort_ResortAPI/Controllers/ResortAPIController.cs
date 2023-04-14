@@ -10,16 +10,17 @@ namespace BookingResort_ResortAPI.Controllers
 	[ApiController]
 	public class ResortAPIController : ControllerBase
 	{
-		public ResortAPIController()
+		private readonly ApplicationDbContext _db;
+		public ResortAPIController(ApplicationDbContext db)
 		{
-			
+			_db = db;
 		}
 
 		[HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public ActionResult<IEnumerable<ResortDTO>> GetResorts()
 		{
-			return Ok(ResortStore.resortList);
+			return Ok(_db.Resorts.ToList());
 		}
 
 		[HttpGet("{id:int}", Name = "GetResort")]
@@ -33,7 +34,7 @@ namespace BookingResort_ResortAPI.Controllers
 			{
 				return BadRequest();
 			}
-			var resort = ResortStore.resortList.FirstOrDefault(u => u.Id == id);
+			var resort = _db.Resorts.FirstOrDefault(u => u.Id == id);
 			if (resort == null)
 			{
 				return NotFound();
@@ -47,7 +48,7 @@ namespace BookingResort_ResortAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public ActionResult<ResortDTO> CreateResort([FromBody] ResortDTO resortDTO)
 		{
-			if (ResortStore.resortList.FirstOrDefault(u => u.Name.ToLower() == resortDTO.Name.ToLower()) != null)
+			if (_db.Resorts.FirstOrDefault(u => u.Name.ToLower() == resortDTO.Name.ToLower()) != null)
 			{
 				ModelState.AddModelError("customError", "Resort Already Exists!!");
 				return BadRequest(ModelState);
@@ -60,8 +61,19 @@ namespace BookingResort_ResortAPI.Controllers
 			{
 				return StatusCode(StatusCodes.Status500InternalServerError);
 			}
-			resortDTO.Id = ResortStore.resortList.OrderByDescending(u => u.Id).FirstOrDefault().Id + 1;
-			ResortStore.resortList.Add(resortDTO);
+			Resort model = new Resort()
+			{
+				Amenity = resortDTO.Amenity,
+				Details = resortDTO.Details,
+				Id = resortDTO.Id,
+				ImageURL = resortDTO.ImageURL,
+				Name = resortDTO.Name,
+				Occupancy = resortDTO.Occupancy,
+				Rate = resortDTO.Rate,
+				Sqft = resortDTO.Sqft
+			};
+			_db.Resorts.Add(model);
+			_db.SaveChanges();
 
 			return CreatedAtRoute("GetResort", new { id = resortDTO.Id }, resortDTO);
 		}
@@ -76,12 +88,13 @@ namespace BookingResort_ResortAPI.Controllers
 			{
 				return BadRequest();
 			}
-			var resort = ResortStore.resortList.FirstOrDefault(u => u.Id == id);
+			var resort = _db.Resorts.FirstOrDefault(u => u.Id == id);
 			if (resort == null)
 			{
 				return NotFound();
 			}
-			ResortStore.resortList.Remove(resort);
+			_db.Resorts.Remove(resort);
+			_db.SaveChanges();
 			return NoContent();
 		}
 
@@ -94,10 +107,24 @@ namespace BookingResort_ResortAPI.Controllers
 			{
 				return BadRequest();
 			}
-			var resort = ResortStore.resortList.FirstOrDefault(u => u.Id == id);
-			resort.Name = resortDTO.Name;
-			resort.Sqft = resortDTO.Sqft;
-			resort.Occupancy = resortDTO.Occupancy;
+			//var resort = _db.Resorts.FirstOrDefault(u => u.Id == id);
+			//resort.Name = resortDTO.Name;
+			//resort.Sqft = resortDTO.Sqft;
+			//resort.Occupancy = resortDTO.Occupancy;
+
+			Resort model = new Resort()
+			{
+				Amenity = resortDTO.Amenity,
+				Details = resortDTO.Details,
+				Id = resortDTO.Id,
+				ImageURL = resortDTO.ImageURL,
+				Name = resortDTO.Name,
+				Occupancy = resortDTO.Occupancy,
+				Rate = resortDTO.Rate,
+				Sqft = resortDTO.Sqft
+			};
+			_db.Resorts.Update(model);
+			_db.SaveChanges();
 			return NoContent();
 		}
 
@@ -110,12 +137,40 @@ namespace BookingResort_ResortAPI.Controllers
 			{
 				return BadRequest();
 			}
-			var resort = ResortStore.resortList.FirstOrDefault(u => u.Id == id);
-			if(resort == null)
+			var resort = _db.Resorts.FirstOrDefault(u => u.Id == id);
+
+			ResortDTO resortDTO = new ResortDTO()
+			{
+				Amenity= resort.Amenity,
+				Details = resort.Details,
+				Id = resort.Id,
+				ImageURL = resort.ImageURL,
+				Name = resort.Name,
+				Occupancy= resort.Occupancy,
+				Rate= resort.Rate,
+				Sqft= resort.Sqft
+			};
+
+			if (resort == null)
 			{
 				return BadRequest();
 			}
-			patchDTO.ApplyTo(resort, ModelState);
+			patchDTO.ApplyTo(resortDTO, ModelState);
+
+			Resort model = new Resort()
+			{
+				Amenity = resortDTO.Amenity,
+				Details = resortDTO.Details,
+				Id = resortDTO.Id,
+				ImageURL = resortDTO.ImageURL,
+				Name = resortDTO.Name,
+				Occupancy = resortDTO.Occupancy,
+				Rate = resortDTO.Rate,
+				Sqft = resortDTO.Sqft
+			};
+			_db.Resorts.Update(model);
+			_db.SaveChanges();
+
 			if (!ModelState.IsValid)
 			{
 				return BadRequest(ModelState);
