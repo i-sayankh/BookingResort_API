@@ -47,7 +47,7 @@ namespace BookingResort_ResortAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public ActionResult<ResortDTO> CreateResort([FromBody] ResortDTO resortDTO)
+		public ActionResult<ResortDTO> CreateResort([FromBody] ResortCreateDTO resortDTO)
 		{
 			if (_db.Resorts.FirstOrDefault(u => u.Name.ToLower() == resortDTO.Name.ToLower()) != null)
 			{
@@ -58,15 +58,14 @@ namespace BookingResort_ResortAPI.Controllers
 			{
 				return BadRequest(resortDTO);
 			}
-			if (resortDTO.Id > 0)
-			{
-				return StatusCode(StatusCodes.Status500InternalServerError);
-			}
+			//if (resortDTO.Id > 0)
+			//{
+			//	return StatusCode(StatusCodes.Status500InternalServerError);
+			//}
 			Resort model = new Resort()
 			{
 				Amenity = resortDTO.Amenity,
 				Details = resortDTO.Details,
-				Id = resortDTO.Id,
 				ImageURL = resortDTO.ImageURL,
 				Name = resortDTO.Name,
 				Occupancy = resortDTO.Occupancy,
@@ -76,7 +75,7 @@ namespace BookingResort_ResortAPI.Controllers
 			_db.Resorts.Add(model);
 			_db.SaveChanges();
 
-			return CreatedAtRoute("GetResort", new { id = resortDTO.Id }, resortDTO);
+			return CreatedAtRoute("GetResort", new { id = model.Id }, model);
 		}
 
 		[HttpDelete("{id:int}", Name = "DeleteResort")]
@@ -102,7 +101,7 @@ namespace BookingResort_ResortAPI.Controllers
 		[HttpPut("{id:int}", Name = "UpdateResort")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public IActionResult UpdateResort(int id, [FromBody] ResortDTO resortDTO)
+		public IActionResult UpdateResort(int id, [FromBody] ResortUpdateDTO resortDTO)
 		{
 			if (resortDTO == null || id != resortDTO.Id)
 			{
@@ -132,7 +131,7 @@ namespace BookingResort_ResortAPI.Controllers
 		[HttpPatch("{id:int}", Name = "UpdatePartialResort")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public IActionResult UpdatePartialResort(int id, JsonPatchDocument<ResortDTO> patchDTO)
+		public IActionResult UpdatePartialResort(int id, JsonPatchDocument<ResortUpdateDTO> patchDTO)
 		{
 			if (patchDTO == null || id == 0)
 			{
@@ -140,7 +139,7 @@ namespace BookingResort_ResortAPI.Controllers
 			}
 			var resort = _db.Resorts.AsNoTracking().FirstOrDefault(u => u.Id == id);
 
-			ResortDTO resortDTO = new ResortDTO()
+			ResortUpdateDTO resortDTO = new()
 			{
 				Amenity= resort.Amenity,
 				Details = resort.Details,
