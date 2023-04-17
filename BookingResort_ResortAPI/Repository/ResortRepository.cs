@@ -14,13 +14,13 @@ namespace BookingResort_ResortAPI.Repository
 		{
 			_db = db;
 		}
-		public async Task Create(Resort entity)
+		public async Task CreateAsync(Resort entity)
 		{
 			await _db.Resorts.AddAsync(entity);
-			await Save();
+			await SaveAsync();
 		}
 
-		public async Task<Resort> Get(Expression<Func<Resort, bool>> filter = null, bool tracked = true)
+		public async Task<Resort> GetAsync(Expression<Func<Resort, bool>> filter = null, bool tracked = true)
 		{
 			IQueryable<Resort> query = _db.Resorts;
 			if(!tracked)
@@ -34,7 +34,7 @@ namespace BookingResort_ResortAPI.Repository
 			return await query.FirstOrDefaultAsync();
 		}
 
-		public async Task<List<Resort>> GetAll(Expression<Func<Resort, bool>> filter = null)
+		public async Task<List<Resort>> GetAllAsync(Expression<Func<Resort, bool>> filter = null)
 		{
 			IQueryable<Resort> query = _db.Resorts;
 			if(filter != null)
@@ -44,15 +44,21 @@ namespace BookingResort_ResortAPI.Repository
 			return await query.ToListAsync();
 		}
 
-		public async Task Remove(Resort entity)
+		public async Task RemoveAsync(Resort entity)
 		{
 			_db.Resorts.Remove(entity);
-			await Save();
+			await SaveAsync();
 		}
 
-		public async Task Save()
+		public async Task SaveAsync()
 		{
 			await _db.SaveChangesAsync();
+		}
+
+		public async Task UpdateAsync(Resort entity)
+		{
+			_db.Resorts.Update(entity);
+			await SaveAsync();
 		}
 	}
 }

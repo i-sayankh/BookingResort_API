@@ -2,6 +2,7 @@
 using BookingResort_ResortAPI.Data;
 using BookingResort_ResortAPI.Models;
 using BookingResort_ResortAPI.Models.DTO;
+using BookingResort_ResortAPI.Repository.IRepository;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,11 +13,11 @@ namespace BookingResort_ResortAPI.Controllers
 	[ApiController]
 	public class ResortAPIController : ControllerBase
 	{
-		private readonly ApplicationDbContext _db;
+		private readonly IResortRepository _dbResort;
 		private readonly IMapper _mapper;
-		public ResortAPIController(ApplicationDbContext db, IMapper mapper)
+		public ResortAPIController(IResortRepository dbResort, IMapper mapper)
 		{
-			_db = db;
+			_dbResort = dbResort;
 			_mapper = mapper;
 		}
 
@@ -24,7 +25,7 @@ namespace BookingResort_ResortAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public async Task<ActionResult<IEnumerable<ResortDTO>>> GetResorts()
 		{
-			IEnumerable<Resort> resortList = await _db.Resorts.ToListAsync();
+			IEnumerable<Resort> resortList = await _dbResort.GetAllAsync();
 			return Ok(_mapper.Map<List<ResortDTO>>(resortList));
 		}
 
@@ -39,7 +40,7 @@ namespace BookingResort_ResortAPI.Controllers
 			{
 				return BadRequest();
 			}
-			var resort = await _db.Resorts.FirstOrDefaultAsync(u => u.Id == id);
+			var resort = await _dbResort.GetAsync(u => u.Id == id);
 			if (resort == null)
 			{
 				return NotFound();
@@ -53,7 +54,7 @@ namespace BookingResort_ResortAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<ResortDTO>> CreateResort([FromBody] ResortCreateDTO createDTO)
 		{
-			if (await _db.Resorts.FirstOrDefaultAsync(u => u.Name.ToLower() == createDTO.Name.ToLower()) != null)
+			if (await _dbResort.GetAsync(u => u.Name.ToLower() == createDTO.Name.ToLower()) != null)
 			{
 				ModelState.AddModelError("customError", "Resort Already Exists!!");
 				return BadRequest(ModelState);
@@ -80,9 +81,7 @@ namespace BookingResort_ResortAPI.Controllers
 			//	Sqft = createDTO.Sqft
 			//};
 
-			await _db.Resorts.AddAsync(model);
-			await _db.SaveChangesAsync();
-
+			await _dbResort.CreateAsync(model);
 			return CreatedAtRoute("GetResort", new { id = model.Id }, model);
 		}
 
@@ -96,13 +95,12 @@ namespace BookingResort_ResortAPI.Controllers
 			{
 				return BadRequest();
 			}
-			var resort = await _db.Resorts.FirstOrDefaultAsync(u => u.Id == id);
+			var resort = await _dbResort.GetAsync(u => u.Id == id);
 			if (resort == null)
 			{
 				return NotFound();
 			}
-			_db.Resorts.Remove(resort);
-			await _db.SaveChangesAsync();
+			await _dbResort.RemoveAsync(resort);
 			return NoContent();
 		}
 
@@ -118,8 +116,7 @@ namespace BookingResort_ResortAPI.Controllers
 
 			Resort model = _mapper.Map<Resort>(updateDTO);
 			
-			_db.Resorts.Update(model);
-			await _db.SaveChangesAsync();
+			await _dbResort.UpdateAsync(model);
 			return NoContent();
 		}
 
@@ -133,7 +130,7 @@ namespace BookingResort_ResortAPI.Controllers
 				return BadRequest();
 			}
 
-			var resort = await _db.Resorts.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
+			var resort = await _dbResort.GetAsync(u => u.Id == id, tracked:false);
 			ResortUpdateDTO resortDTO = _mapper.Map<ResortUpdateDTO>(resort);			
 
 			if (resort == null)
@@ -143,8 +140,7 @@ namespace BookingResort_ResortAPI.Controllers
 
 			patchDTO.ApplyTo(resortDTO, ModelState);
 			Resort model = _mapper.Map<Resort>(resortDTO);
-			_db.Resorts.Update(model);
-			await _db.SaveChangesAsync();
+			await _dbResort.UpdateAsync(model);
 
 			if (!ModelState.IsValid)
 			{

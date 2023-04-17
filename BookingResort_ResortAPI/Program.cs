@@ -1,5 +1,7 @@
 using BookingResort_ResortAPI;
 using BookingResort_ResortAPI.Data;
+using BookingResort_ResortAPI.Repository;
+using BookingResort_ResortAPI.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
 {
 	option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
 });
+builder.Services.AddScoped<IResortRepository, ResortRepository>();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 builder.Services.AddControllers(option => {
 	//option.ReturnHttpNotAcceptable=true;
