@@ -1,4 +1,5 @@
-﻿using BookingResort_ResortAPI.Data;
+﻿using AutoMapper;
+using BookingResort_ResortAPI.Data;
 using BookingResort_ResortAPI.Models;
 using BookingResort_ResortAPI.Models.DTO;
 using Microsoft.AspNetCore.JsonPatch;
@@ -12,16 +13,19 @@ namespace BookingResort_ResortAPI.Controllers
 	public class ResortAPIController : ControllerBase
 	{
 		private readonly ApplicationDbContext _db;
-		public ResortAPIController(ApplicationDbContext db)
+		private readonly IMapper _mapper;
+		public ResortAPIController(ApplicationDbContext db, IMapper mapper)
 		{
 			_db = db;
+			_mapper = mapper;
 		}
 
 		[HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public async Task<ActionResult<IEnumerable<ResortDTO>>> GetResorts()
 		{
-			return Ok(await _db.Resorts.ToListAsync());
+			IEnumerable<Resort> resortList = await _db.Resorts.ToListAsync();
+			return Ok(_mapper.Map<List<ResortDTO>>(resortList));
 		}
 
 		[HttpGet("{id:int}", Name = "GetResort")]
@@ -40,38 +44,42 @@ namespace BookingResort_ResortAPI.Controllers
 			{
 				return NotFound();
 			}
-			return Ok(resort);
+			return Ok(_mapper.Map<ResortDTO>(resort));
 		}
 
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<ActionResult<ResortDTO>> CreateResort([FromBody] ResortCreateDTO resortDTO)
+		public async Task<ActionResult<ResortDTO>> CreateResort([FromBody] ResortCreateDTO createDTO)
 		{
-			if (await _db.Resorts.FirstOrDefaultAsync(u => u.Name.ToLower() == resortDTO.Name.ToLower()) != null)
+			if (await _db.Resorts.FirstOrDefaultAsync(u => u.Name.ToLower() == createDTO.Name.ToLower()) != null)
 			{
 				ModelState.AddModelError("customError", "Resort Already Exists!!");
 				return BadRequest(ModelState);
 			}
-			if (resortDTO == null)
+			if (createDTO == null)
 			{
-				return BadRequest(resortDTO);
+				return BadRequest(createDTO);
 			}
 			//if (resortDTO.Id > 0)
 			//{
 			//	return StatusCode(StatusCodes.Status500InternalServerError);
 			//}
-			Resort model = new Resort()
-			{
-				Amenity = resortDTO.Amenity,
-				Details = resortDTO.Details,
-				ImageURL = resortDTO.ImageURL,
-				Name = resortDTO.Name,
-				Occupancy = resortDTO.Occupancy,
-				Rate = resortDTO.Rate,
-				Sqft = resortDTO.Sqft
-			};
+
+			Resort model = _mapper.Map<Resort>(createDTO);
+			
+			//Resort model = new Resort()
+			//{
+			//	Amenity = createDTO.Amenity,
+			//	Details = createDTO.Details,
+			//	ImageURL = createDTO.ImageURL,
+			//	Name = createDTO.Name,
+			//	Occupancy = createDTO.Occupancy,
+			//	Rate = createDTO.Rate,
+			//	Sqft = createDTO.Sqft
+			//};
+
 			await _db.Resorts.AddAsync(model);
 			await _db.SaveChangesAsync();
 
@@ -101,28 +109,15 @@ namespace BookingResort_ResortAPI.Controllers
 		[HttpPut("{id:int}", Name = "UpdateResort")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> UpdateResort(int id, [FromBody] ResortUpdateDTO resortDTO)
+		public async Task<IActionResult> UpdateResort(int id, [FromBody] ResortUpdateDTO updateDTO)
 		{
-			if (resortDTO == null || id != resortDTO.Id)
+			if (updateDTO == null || id != updateDTO.Id)
 			{
 				return BadRequest();
 			}
-			//var resort = _db.Resorts.FirstOrDefault(u => u.Id == id);
-			//resort.Name = resortDTO.Name;
-			//resort.Sqft = resortDTO.Sqft;
-			//resort.Occupancy = resortDTO.Occupancy;
 
-			Resort model = new Resort()
-			{
-				Amenity = resortDTO.Amenity,
-				Details = resortDTO.Details,
-				Id = resortDTO.Id,
-				ImageURL = resortDTO.ImageURL,
-				Name = resortDTO.Name,
-				Occupancy = resortDTO.Occupancy,
-				Rate = resortDTO.Rate,
-				Sqft = resortDTO.Sqft
-			};
+			Resort model = _mapper.Map<Resort>(updateDTO);
+			
 			_db.Resorts.Update(model);
 			await _db.SaveChangesAsync();
 			return NoContent();
@@ -137,37 +132,17 @@ namespace BookingResort_ResortAPI.Controllers
 			{
 				return BadRequest();
 			}
-			var resort = await _db.Resorts.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
 
-			ResortUpdateDTO resortDTO = new()
-			{
-				Amenity= resort.Amenity,
-				Details = resort.Details,
-				Id = resort.Id,
-				ImageURL = resort.ImageURL,
-				Name = resort.Name,
-				Occupancy= resort.Occupancy,
-				Rate= resort.Rate,
-				Sqft= resort.Sqft
-			};
+			var resort = await _db.Resorts.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
+			ResortUpdateDTO resortDTO = _mapper.Map<ResortUpdateDTO>(resort);			
 
 			if (resort == null)
 			{
 				return BadRequest();
 			}
-			patchDTO.ApplyTo(resortDTO, ModelState);
 
-			Resort model = new Resort()
-			{
-				Amenity = resortDTO.Amenity,
-				Details = resortDTO.Details,
-				Id = resortDTO.Id,
-				ImageURL = resortDTO.ImageURL,
-				Name = resortDTO.Name,
-				Occupancy = resortDTO.Occupancy,
-				Rate = resortDTO.Rate,
-				Sqft = resortDTO.Sqft
-			};
+			patchDTO.ApplyTo(resortDTO, ModelState);
+			Resort model = _mapper.Map<Resort>(resortDTO);
 			_db.Resorts.Update(model);
 			await _db.SaveChangesAsync();
 
