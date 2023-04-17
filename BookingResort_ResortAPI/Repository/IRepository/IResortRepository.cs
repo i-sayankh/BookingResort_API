@@ -5,8 +5,8 @@ namespace BookingResort_ResortAPI.Repository.IRepository
 {
 	public interface IResortRepository
 	{
-		Task<List<Resort>> GetAll(Expression<Func<Resort>> filter = null);
-		Task<Resort> Get(Expression<Func<Resort>> filter = null, bool tracked=true);
+		Task<List<Resort>> GetAll(Expression<Func<Resort, bool>> filter = null);
+		Task<Resort> Get(Expression<Func<Resort, bool>> filter = null, bool tracked=true);
 		Task Create(Resort entity);
 		Task Remove(Resort entity);
 		Task Save();
