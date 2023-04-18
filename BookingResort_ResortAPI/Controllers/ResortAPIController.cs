@@ -6,6 +6,7 @@ using BookingResort_ResortAPI.Repository.IRepository;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace BookingResort_ResortAPI.Controllers
 {
@@ -13,20 +14,33 @@ namespace BookingResort_ResortAPI.Controllers
 	[ApiController]
 	public class ResortAPIController : ControllerBase
 	{
+		protected APIResponse _response;
 		private readonly IResortRepository _dbResort;
 		private readonly IMapper _mapper;
 		public ResortAPIController(IResortRepository dbResort, IMapper mapper)
 		{
 			_dbResort = dbResort;
 			_mapper = mapper;
+			this._response= new();
 		}
 
 		[HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		public async Task<ActionResult<IEnumerable<ResortDTO>>> GetResorts()
+		public async Task<ActionResult<APIResponse>> GetResorts()
 		{
-			IEnumerable<Resort> resortList = await _dbResort.GetAllAsync();
-			return Ok(_mapper.Map<List<ResortDTO>>(resortList));
+			try
+			{
+				IEnumerable<Resort> resortList = await _dbResort.GetAllAsync();
+				_response.Result = _mapper.Map<List<ResortDTO>>(resortList);
+				_response.StatusCode = HttpStatusCode.OK;
+				return Ok(_response);
+			}
+			catch (Exception ex)
+			{
+				_response.IsSuccess= false;
+				_response.ErrorMessages = new List<string> { ex.Message };
+			}
+			return _response;
 		}
 
 		[HttpGet("{id:int}", Name = "GetResort")]
@@ -34,90 +48,139 @@ namespace BookingResort_ResortAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		//[ProducesResponseType(200, Type = typeof(ResortDTO))]		
-		public async Task<ActionResult<ResortDTO>> GetResort(int id)
+		public async Task<ActionResult<APIResponse>> GetResort(int id)
 		{
-			if (id == 0)
+			try
 			{
-				return BadRequest();
+				if (id == 0)
+				{
+					return BadRequest();
+				}
+				var resort = await _dbResort.GetAsync(u => u.Id == id);
+				if (resort == null)
+				{
+					return NotFound();
+				}
+				_response.Result = _mapper.Map<ResortDTO>(resort);
+				_response.StatusCode = HttpStatusCode.OK;
+				return Ok(_response);
 			}
-			var resort = await _dbResort.GetAsync(u => u.Id == id);
-			if (resort == null)
+			catch (Exception ex)
 			{
-				return NotFound();
+				_response.IsSuccess = false;
+				_response.ErrorMessages = new List<string> { ex.Message };
 			}
-			return Ok(_mapper.Map<ResortDTO>(resort));
+			return _response;
+
 		}
 
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<ActionResult<ResortDTO>> CreateResort([FromBody] ResortCreateDTO createDTO)
+		public async Task<ActionResult<APIResponse>> CreateResort([FromBody] ResortCreateDTO createDTO)
 		{
-			if (await _dbResort.GetAsync(u => u.Name.ToLower() == createDTO.Name.ToLower()) != null)
+			try
 			{
-				ModelState.AddModelError("customError", "Resort Already Exists!!");
-				return BadRequest(ModelState);
+				if (await _dbResort.GetAsync(u => u.Name.ToLower() == createDTO.Name.ToLower()) != null)
+				{
+					ModelState.AddModelError("customError", "Resort Already Exists!!");
+					return BadRequest(ModelState);
+				}
+				if (createDTO == null)
+				{
+					return BadRequest(createDTO);
+				}
+				//if (resortDTO.Id > 0)
+				//{
+				//	return StatusCode(StatusCodes.Status500InternalServerError);
+				//}
+
+				Resort resort = _mapper.Map<Resort>(createDTO);
+
+				//Resort model = new Resort()
+				//{
+				//	Amenity = createDTO.Amenity,
+				//	Details = createDTO.Details,
+				//	ImageURL = createDTO.ImageURL,
+				//	Name = createDTO.Name,
+				//	Occupancy = createDTO.Occupancy,
+				//	Rate = createDTO.Rate,
+				//	Sqft = createDTO.Sqft
+				//};
+
+				await _dbResort.CreateAsync(resort);
+				_response.Result = _mapper.Map<ResortDTO>(resort);
+				_response.StatusCode = HttpStatusCode.Created;
+				return CreatedAtRoute("GetResort", new { id = resort.Id }, _response);
 			}
-			if (createDTO == null)
+			catch (Exception ex)
 			{
-				return BadRequest(createDTO);
+				_response.IsSuccess = false;
+				_response.ErrorMessages = new List<string> { ex.Message };
 			}
-			//if (resortDTO.Id > 0)
-			//{
-			//	return StatusCode(StatusCodes.Status500InternalServerError);
-			//}
-
-			Resort model = _mapper.Map<Resort>(createDTO);
-			
-			//Resort model = new Resort()
-			//{
-			//	Amenity = createDTO.Amenity,
-			//	Details = createDTO.Details,
-			//	ImageURL = createDTO.ImageURL,
-			//	Name = createDTO.Name,
-			//	Occupancy = createDTO.Occupancy,
-			//	Rate = createDTO.Rate,
-			//	Sqft = createDTO.Sqft
-			//};
-
-			await _dbResort.CreateAsync(model);
-			return CreatedAtRoute("GetResort", new { id = model.Id }, model);
+			return _response;
 		}
 
 		[HttpDelete("{id:int}", Name = "DeleteResort")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> DeleteResort(int id)
+		public async Task<ActionResult<APIResponse>> DeleteResort(int id)
 		{
-			if (id == 0)
+			try
 			{
-				return BadRequest();
+				if (id == 0)
+				{
+					_response.StatusCode = HttpStatusCode.BadRequest;
+					return BadRequest(_response);
+				}
+				var resort = await _dbResort.GetAsync(u => u.Id == id);
+				if (resort == null)
+				{
+					_response.StatusCode = HttpStatusCode.NotFound;
+					return NotFound(_response);
+				}
+				await _dbResort.RemoveAsync(resort);
+				_response.StatusCode = HttpStatusCode.NoContent;
+				_response.IsSuccess = true;
+				return Ok(_response);
 			}
-			var resort = await _dbResort.GetAsync(u => u.Id == id);
-			if (resort == null)
+			catch (Exception ex)
 			{
-				return NotFound();
+				_response.IsSuccess = false;
+				_response.ErrorMessages = new List<string> { ex.Message };
 			}
-			await _dbResort.RemoveAsync(resort);
-			return NoContent();
+			return _response;
+
 		}
 
 		[HttpPut("{id:int}", Name = "UpdateResort")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> UpdateResort(int id, [FromBody] ResortUpdateDTO updateDTO)
+		public async Task<ActionResult<APIResponse>> UpdateResort(int id, [FromBody] ResortUpdateDTO updateDTO)
 		{
-			if (updateDTO == null || id != updateDTO.Id)
+			try
 			{
-				return BadRequest();
-			}
+				if (updateDTO == null || id != updateDTO.Id)
+				{
+					_response.StatusCode=HttpStatusCode.BadRequest;
+					return BadRequest(_response);
+				}
 
-			Resort model = _mapper.Map<Resort>(updateDTO);
-			
-			await _dbResort.UpdateAsync(model);
-			return NoContent();
+				Resort model = _mapper.Map<Resort>(updateDTO);
+
+				await _dbResort.UpdateAsync(model);
+				_response.StatusCode = HttpStatusCode.NoContent;
+				_response.IsSuccess = true;
+				return Ok(_response);
+			}
+			catch (Exception ex)
+			{
+				_response.IsSuccess = false;
+				_response.ErrorMessages = new List<string> { ex.Message };
+			}
+			return _response;
 		}
 
 		[HttpPatch("{id:int}", Name = "UpdatePartialResort")]
