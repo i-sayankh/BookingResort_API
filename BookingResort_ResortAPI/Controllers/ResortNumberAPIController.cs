@@ -3,6 +3,7 @@ using BookingResort_ResortAPI.Data;
 using BookingResort_ResortAPI.Models;
 using BookingResort_ResortAPI.Models.DTO;
 using BookingResort_ResortAPI.Repository.IRepository;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,12 +17,14 @@ namespace BookingResort_ResortAPI.Controllers
 	{
 		protected APIResponse _response;
 		private readonly IResortNumberRepository _dbResortNumber;
+		private readonly IResortRepository _dbResort;
 		private readonly IMapper _mapper;
-		public ResortNumberAPIController(IResortNumberRepository dbResortNumber, IMapper mapper)
+		public ResortNumberAPIController(IResortNumberRepository dbResortNumber, IMapper mapper, IResortRepository dbResort)
 		{
 			_dbResortNumber = dbResortNumber;
 			_mapper = mapper;
-			this._response= new();
+			this._response = new();
+			_dbResort = dbResort;
 		}
 
 		[HttpGet]
@@ -86,6 +89,13 @@ namespace BookingResort_ResortAPI.Controllers
 					ModelState.AddModelError("customError", "Resort Number Already Exists!!");
 					return BadRequest(ModelState);
 				}
+
+				if(await _dbResort.GetAsync(u=>u.Id==createDTO.ResortId)==null)
+				{
+					ModelState.AddModelError("customError", "Resort Id is Invalid!!");
+					return BadRequest(ModelState);
+				}
+
 				if (createDTO == null)
 				{
 					return BadRequest(createDTO);
@@ -150,6 +160,12 @@ namespace BookingResort_ResortAPI.Controllers
 				{
 					_response.StatusCode=HttpStatusCode.BadRequest;
 					return BadRequest(_response);
+				}
+
+				if (await _dbResort.GetAsync(u => u.Id == updateDTO.ResortId) == null)
+				{
+					ModelState.AddModelError("customError", "Resort Id is Invalid!!");
+					return BadRequest(ModelState);
 				}
 
 				ResortNumber resortNumber = _mapper.Map<ResortNumber>(updateDTO);
