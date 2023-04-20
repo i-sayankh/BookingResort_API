@@ -1,10 +1,14 @@
 using BookingResort_Web;
+using BookingResort_Web.Services;
+using BookingResort_Web.Services.IServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
+builder.Services.AddHttpClient<IResortService, ResortService>();
+builder.Services.AddScoped<IResortService, ResortService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
