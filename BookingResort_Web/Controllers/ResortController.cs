@@ -5,6 +5,7 @@ using BookingResort_Web.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace BookingResort_Web.Controllers
 {
@@ -44,6 +45,32 @@ namespace BookingResort_Web.Controllers
                 var response = await _resortService.CreateAsync<APIResponse>(model);
                 if (response != null && response.IsSuccess)
 				{
+                    return RedirectToAction(nameof(IndexResort));
+                }
+            }
+            return View(model);
+        }
+
+        public async Task<IActionResult> UpdateResort(int resortId)
+        {
+            var response = await _resortService.GetAsync<APIResponse>(resortId);
+            if (response != null && response.IsSuccess)
+            {
+                ResortDTO model = JsonConvert.DeserializeObject<ResortDTO>(Convert.ToString(response.Result));
+                return View(_mapper.Map<ResortUpdateDTO>(model));
+            }
+            return NotFound();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateResort(ResortUpdateDTO model)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _resortService.UpdateAsync<APIResponse>(model);
+                if (response != null && response.IsSuccess)
+                {
                     return RedirectToAction(nameof(IndexResort));
                 }
             }

@@ -36,10 +36,10 @@
                     <td>@item.Occupancy</td>
                     <td>@((item.Rate).ToString("c"))</td>
                     <td>
-                        <a asp-controller="Resort" asp-action="UpdateResort" class="btn btn-outline-success">
+                        <a asp-controller="Resort" asp-action="UpdateResort" asp-route-resortId="@item.Id" class="btn btn-outline-success">
                             <i class="bi bi-pencil-square"></i>
                         </a>
-                        <a asp-controller="Resort" asp-action="DeleteResort" class="btn btn-outline-danger">
+                        <a asp-controller="Resort" asp-action="DeleteResort" asp-route-resortId="@item.Id" class="btn btn-outline-danger">
                             <i class="bi bi-trash-fill"></i>
                         </a>
                     </td>
