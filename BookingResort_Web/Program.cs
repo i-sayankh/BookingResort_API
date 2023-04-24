@@ -7,8 +7,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
+
 builder.Services.AddHttpClient<IResortService, ResortService>();
 builder.Services.AddScoped<IResortService, ResortService>();
+
+builder.Services.AddHttpClient<IResortNumberService, ResortNumberService>();
+builder.Services.AddScoped<IResortNumberService, ResortNumberService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
