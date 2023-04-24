@@ -33,7 +33,7 @@ namespace BookingResort_ResortAPI.Controllers
 		{
 			try
 			{
-				IEnumerable<ResortNumber> resortNumberList = await _dbResortNumber.GetAllAsync();
+				IEnumerable<ResortNumber> resortNumberList = await _dbResortNumber.GetAllAsync(includeProperties:"Resort");
 				_response.Result = _mapper.Map<List<ResortNumberDTO>>(resortNumberList);
 				_response.StatusCode = HttpStatusCode.OK;
 				return Ok(_response);
