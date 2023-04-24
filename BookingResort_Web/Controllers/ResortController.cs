@@ -4,6 +4,7 @@ using BookingResort_Web.Models.DTO;
 using BookingResort_Web.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace BookingResort_Web.Controllers
 {
@@ -28,5 +29,25 @@ namespace BookingResort_Web.Controllers
 			}
 			return View(list);
 		}
-	}
+
+        public async Task<IActionResult> CreateResort()
+        {            
+            return View();
+        }
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateResort(ResortCreateDTO model)
+        {
+            if(ModelState.IsValid)
+			{
+                var response = await _resortService.CreateAsync<APIResponse>(model);
+                if (response != null && response.IsSuccess)
+				{
+                    return RedirectToAction(nameof(IndexResort));
+                }
+            }
+            return View(model);
+        }
+    }
 }
