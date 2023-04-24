@@ -1,0 +1,46 @@
+﻿@model IEnumerable<BookingResort_Web.Models.DTO.ResortNumberDTO>
+<br />
+<div class="container p-4 border">
+    <div class="row pb-2">
+        <div class="col">
+            <h1 class="text-primary">Resort Number List</h1>
+        </div>
+        <div class="col text-end pt-1">
+            <a asp-controller="ResortNumber" asp-action="CreateResortNumber" class="btn btn-outline-primary">
+                <i class="bi bi-plus-circle"></i>
+                Create New Resort Number
+            </a>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Resort Name
+                </th>
+                <th>
+                    Resort Number
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Resort.Name</td>
+                    <td>@item.ResortNo</td>
+                    <td>
+                        <a asp-controller="Resort" asp-action="UpdateResortNumber" asp-route-resortNo="@item.ResortNo" class="btn btn-outline-success">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a asp-controller="Resort" asp-action="DeleteResortNumber" asp-route-resortNo="@item.ResortNo" class="btn btn-outline-danger">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

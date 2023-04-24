@@ -9,5 +9,6 @@ namespace BookingResort_Web.Models.DTO
 		[Required]
 		public int ResortId { get; set; }
 		public string SpecialDetails { get; set; }
+		public ResortDTO Resort { get; set; }
 	}
 }
