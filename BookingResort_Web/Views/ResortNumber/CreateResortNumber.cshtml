@@ -1,0 +1,57 @@
+﻿@model BookingResort_Web.Models.VM.ResortNumberCreateVM
+
+<form asp-action="CreateResortNumber">
+    <br />
+    <div class="container border p-3">
+        <h1 class="text-primary">Create Resort Number</h1>
+        <hr />
+
+        <div class="row">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="col-2">
+                <label asp-for="ResortNumber.ResortNo" class="control-label pt-2" style="font-size:20px;"></label>
+            </div>
+
+            <div class="col-10 pb-3">
+                <input asp-for="ResortNumber.ResortNo" class="form-control" />
+                <span asp-validation-for="ResortNumber.ResortNo" class="text-danger"></span>
+            </div>
+
+            <div class="col-2">
+                <label asp-for="ResortNumber.ResortId" class="control-label pt-2" style="font-size:20px;"></label>
+            </div>
+
+            <div class="col-10 pb-3">
+                <select asp-for="ResortNumber.ResortId" class="form-select" asp-items="@Model.ResortList">
+                    <option disabled selected>--Select Resort--</option>
+
+                </select>
+                <span asp-validation-for="ResortNumber.ResortId" class="text-danger"></span>
+            </div>
+
+            <div class="col-2">
+                <label asp-for="ResortNumber.SpecialDetails" class="control-label pt-2" style="font-size:20px;"></label>
+            </div>
+
+            <div class="col-10 pb-3">
+                <textarea asp-for="ResortNumber.SpecialDetails" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="ResortNumber.SpecialDetails" class="text-danger"></span>
+            </div>
+            
+            <div class="col-5 offset-2">
+                <a asp-action="IndexResortNumber" asp-controller="ResortNumber" class="btn-primary btn form-control">Back to List</a>
+            </div>
+
+            <div class="col-5">
+                <input type="submit" value="Create" class="btn btn-success form-control" />
+            </div>
+
+        </div>
+
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

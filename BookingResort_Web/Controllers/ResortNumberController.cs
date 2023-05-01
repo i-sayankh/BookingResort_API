@@ -52,14 +52,14 @@ namespace BookingResort_Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateResortNumber(ResortNumberCreateDTO model)
+        public async Task<IActionResult> CreateResortNumber(ResortNumberCreateVM model)
         {
             if (ModelState.IsValid)
             {
-                var response = await _resortService.CreateAsync<APIResponse>(model);
+                var response = await _resortNumberService.CreateAsync<APIResponse>(model.ResortNumber);
                 if (response != null && response.IsSuccess)
                 {
-                    return RedirectToAction(nameof(IndexResort));
+                    return RedirectToAction(nameof(IndexResortNumber));
                 }
             }
             return View(model);
