@@ -60,12 +60,14 @@ namespace BookingResort_Web.Controllers
                 var response = await _resortNumberService.CreateAsync<APIResponse>(model.ResortNumber);
                 if (response != null && response.IsSuccess)
                 {
+                    TempData["success"] = "Resort Number Created Sucessfully";
                     return RedirectToAction(nameof(IndexResortNumber));
                 }
                 else
                 {
                     if(response.ErrorMessages.Count > 0)
                     {
+                        TempData["error"] = response.ErrorMessages.FirstOrDefault();
                         ModelState.AddModelError("ErrorMessages", response.ErrorMessages.FirstOrDefault());
                     }
                 }
@@ -118,12 +120,14 @@ namespace BookingResort_Web.Controllers
                 var response = await _resortNumberService.UpdateAsync<APIResponse>(model.ResortNumber);
                 if (response != null && response.IsSuccess)
                 {
+                    TempData["success"] = "Resort Number Updated Sucessfully";
                     return RedirectToAction(nameof(IndexResortNumber));
                 }
                 else
                 {
                     if (response.ErrorMessages.Count > 0)
                     {
+                        TempData["error"] = response.ErrorMessages.FirstOrDefault();
                         ModelState.AddModelError("ErrorMessages", response.ErrorMessages.FirstOrDefault());
                     }
                 }
@@ -174,8 +178,10 @@ namespace BookingResort_Web.Controllers
             var response = await _resortNumberService.DeleteAsync<APIResponse>(model.ResortNumber.ResortNo);
             if (response != null && response.IsSuccess)
             {
+                TempData["success"] = "Resort Number Deleted Sucessfully";
                 return RedirectToAction(nameof(IndexResortNumber));
             }
+            TempData["error"] = response.ErrorMessages.FirstOrDefault();
             return View(model);
         }
     }

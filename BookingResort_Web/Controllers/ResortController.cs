@@ -45,9 +45,11 @@ namespace BookingResort_Web.Controllers
                 var response = await _resortService.CreateAsync<APIResponse>(model);
                 if (response != null && response.IsSuccess)
 				{
+                    TempData["success"] = "Resort Created Successfully";
                     return RedirectToAction(nameof(IndexResort));
                 }
             }
+            TempData["error"] = "Error Encountered";
             return View(model);
         }
 
@@ -71,9 +73,11 @@ namespace BookingResort_Web.Controllers
                 var response = await _resortService.UpdateAsync<APIResponse>(model);
                 if (response != null && response.IsSuccess)
                 {
+                    TempData["success"] = "Resort Updated Successfully";
                     return RedirectToAction(nameof(IndexResort));
                 }
             }
+            TempData["error"] = "Error Encountered";
             return View(model);
         }
 
@@ -95,8 +99,10 @@ namespace BookingResort_Web.Controllers
             var response = await _resortService.DeleteAsync<APIResponse>(model.Id);
             if (response != null && response.IsSuccess)
             {
+                TempData["success"] = "Resort Deleted Successfully";
                 return RedirectToAction(nameof(IndexResort));
             }
+            TempData["error"] = "Error Encountered";
             return View(model);
         }
     }
