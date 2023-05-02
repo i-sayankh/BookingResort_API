@@ -84,10 +84,10 @@ namespace BookingResort_Web.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> UpdateResortNumber(int resortId)
+        public async Task<IActionResult> UpdateResortNumber(int resortNo)
         {
             ResortNumberUpdateVM resortNumberVM = new();
-            var response = await _resortNumberService.GetAsync<APIResponse>(resortId);
+            var response = await _resortNumberService.GetAsync<APIResponse>(resortNo);
             if (response != null && response.IsSuccess)
             {
                 ResortNumberDTO model = JsonConvert.DeserializeObject<ResortNumberDTO>(Convert.ToString(response.Result));
@@ -142,14 +142,14 @@ namespace BookingResort_Web.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> DeleteResortNumber(int resortId)
+        public async Task<IActionResult> DeleteResortNumber(int resortNo)
         {
-            ResortNumberUpdateVM resortNumberVM = new();
-            var response = await _resortNumberService.GetAsync<APIResponse>(resortId);
+            ResortNumberDeleteVM resortNumberVM = new();
+            var response = await _resortNumberService.GetAsync<APIResponse>(resortNo);
             if (response != null && response.IsSuccess)
             {
                 ResortNumberDTO model = JsonConvert.DeserializeObject<ResortNumberDTO>(Convert.ToString(response.Result));
-                resortNumberVM.ResortNumber = _mapper.Map<ResortNumberUpdateDTO>(model);
+                resortNumberVM.ResortNumber = model;
             }
 
             response = await _resortService.GetAllAsync<APIResponse>();
