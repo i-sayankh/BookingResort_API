@@ -86,13 +86,13 @@ namespace BookingResort_ResortAPI.Controllers
 			{
 				if (await _dbResortNumber.GetAsync(u => u.ResortNo == createDTO.ResortNo) != null)
 				{
-					ModelState.AddModelError("customError", "Resort Number Already Exists!!");
+					ModelState.AddModelError("ErrorMessages", "Resort Number Already Exists!!");
 					return BadRequest(ModelState);
 				}
 
 				if(await _dbResort.GetAsync(u=>u.Id==createDTO.ResortId)==null)
 				{
-					ModelState.AddModelError("customError", "Resort Id is Invalid!!");
+					ModelState.AddModelError("ErrorMessages", "Resort Id is Invalid!!");
 					return BadRequest(ModelState);
 				}
 
@@ -164,7 +164,7 @@ namespace BookingResort_ResortAPI.Controllers
 
 				if (await _dbResort.GetAsync(u => u.Id == updateDTO.ResortId) == null)
 				{
-					ModelState.AddModelError("customError", "Resort Id is Invalid!!");
+					ModelState.AddModelError("ErrorMessages", "Resort Id is Invalid!!");
 					return BadRequest(ModelState);
 				}
 

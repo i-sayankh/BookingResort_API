@@ -41,7 +41,8 @@ namespace BookingResort_Web.Controllers
             var response = await _resortService.GetAllAsync<APIResponse>();
             if (response != null && response.IsSuccess)
             {
-                resortNumberVM.ResortList = JsonConvert.DeserializeObject<List<ResortDTO>>(Convert.ToString(response.Result)).Select(i=>new SelectListItem
+                resortNumberVM.ResortList = JsonConvert.DeserializeObject<List<ResortDTO>>
+                    (Convert.ToString(response.Result)).Select(i=>new SelectListItem
                 {
                     Text = i.Name,
                     Value = i.Id.ToString(),
@@ -61,6 +62,17 @@ namespace BookingResort_Web.Controllers
                 {
                     return RedirectToAction(nameof(IndexResortNumber));
                 }
+            }
+
+            var resp = await _resortService.GetAllAsync<APIResponse>();
+            if (resp != null && resp.IsSuccess)
+            {
+                model.ResortList = JsonConvert.DeserializeObject<List<ResortDTO>>
+                    (Convert.ToString(resp.Result)).Select(i => new SelectListItem
+                    {
+                        Text = i.Name,
+                        Value = i.Id.ToString(),
+                    });
             }
             return View(model);
         }

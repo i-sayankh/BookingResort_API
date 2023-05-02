@@ -84,7 +84,7 @@ namespace BookingResort_ResortAPI.Controllers
 			{
 				if (await _dbResort.GetAsync(u => u.Name.ToLower() == createDTO.Name.ToLower()) != null)
 				{
-					ModelState.AddModelError("customError", "Resort Already Exists!!");
+					ModelState.AddModelError("ErrorMessages", "Resort Already Exists!!");
 					return BadRequest(ModelState);
 				}
 				if (createDTO == null)
