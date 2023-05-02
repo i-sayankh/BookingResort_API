@@ -84,53 +84,99 @@ namespace BookingResort_Web.Controllers
             return View(model);
         }
 
-        //public async Task<IActionResult> UpdateResort(int resortId)
-        //{
-        //    var response = await _resortService.GetAsync<APIResponse>(resortId);
-        //    if (response != null && response.IsSuccess)
-        //    {
-        //        ResortDTO model = JsonConvert.DeserializeObject<ResortDTO>(Convert.ToString(response.Result));
-        //        return View(_mapper.Map<ResortUpdateDTO>(model));
-        //    }
-        //    return NotFound();
-        //}
+        public async Task<IActionResult> UpdateResortNumber(int resortId)
+        {
+            ResortNumberUpdateVM resortNumberVM = new();
+            var response = await _resortNumberService.GetAsync<APIResponse>(resortId);
+            if (response != null && response.IsSuccess)
+            {
+                ResortNumberDTO model = JsonConvert.DeserializeObject<ResortNumberDTO>(Convert.ToString(response.Result));
+                resortNumberVM.ResortNumber = _mapper.Map<ResortNumberUpdateDTO>(model);
+            }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> UpdateResort(ResortUpdateDTO model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var response = await _resortService.UpdateAsync<APIResponse>(model);
-        //        if (response != null && response.IsSuccess)
-        //        {
-        //            return RedirectToAction(nameof(IndexResort));
-        //        }
-        //    }
-        //    return View(model);
-        //}
+            response = await _resortService.GetAllAsync<APIResponse>();
+            if (response != null && response.IsSuccess)
+            {
+                resortNumberVM.ResortList = JsonConvert.DeserializeObject<List<ResortDTO>>
+                    (Convert.ToString(response.Result)).Select(i => new SelectListItem
+                    {
+                        Text = i.Name,
+                        Value = i.Id.ToString(),
+                    });
+                return View(resortNumberVM);
+            }
 
-        //public async Task<IActionResult> DeleteResort(int resortId)
-        //{
-        //    var response = await _resortService.GetAsync<APIResponse>(resortId);
-        //    if (response != null && response.IsSuccess)
-        //    {
-        //        ResortDTO model = JsonConvert.DeserializeObject<ResortDTO>(Convert.ToString(response.Result));
-        //        return View(model);
-        //    }
-        //    return NotFound();
-        //}
+            return NotFound();
+        }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteResort(ResortDTO model)
-        //{
-        //    var response = await _resortService.DeleteAsync<APIResponse>(model.Id);
-        //    if (response != null && response.IsSuccess)
-        //    {
-        //        return RedirectToAction(nameof(IndexResort));
-        //    }
-        //    return View(model);
-        //}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateResortNumber(ResortNumberUpdateVM model)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _resortNumberService.UpdateAsync<APIResponse>(model.ResortNumber);
+                if (response != null && response.IsSuccess)
+                {
+                    return RedirectToAction(nameof(IndexResortNumber));
+                }
+                else
+                {
+                    if (response.ErrorMessages.Count > 0)
+                    {
+                        ModelState.AddModelError("ErrorMessages", response.ErrorMessages.FirstOrDefault());
+                    }
+                }
+            }
+
+            var resp = await _resortService.GetAllAsync<APIResponse>();
+            if (resp != null && resp.IsSuccess)
+            {
+                model.ResortList = JsonConvert.DeserializeObject<List<ResortDTO>>
+                    (Convert.ToString(resp.Result)).Select(i => new SelectListItem
+                    {
+                        Text = i.Name,
+                        Value = i.Id.ToString(),
+                    });
+            }
+            return View(model);
+        }
+
+        public async Task<IActionResult> DeleteResortNumber(int resortId)
+        {
+            ResortNumberUpdateVM resortNumberVM = new();
+            var response = await _resortNumberService.GetAsync<APIResponse>(resortId);
+            if (response != null && response.IsSuccess)
+            {
+                ResortNumberDTO model = JsonConvert.DeserializeObject<ResortNumberDTO>(Convert.ToString(response.Result));
+                resortNumberVM.ResortNumber = _mapper.Map<ResortNumberUpdateDTO>(model);
+            }
+
+            response = await _resortService.GetAllAsync<APIResponse>();
+            if (response != null && response.IsSuccess)
+            {
+                resortNumberVM.ResortList = JsonConvert.DeserializeObject<List<ResortDTO>>
+                    (Convert.ToString(response.Result)).Select(i => new SelectListItem
+                    {
+                        Text = i.Name,
+                        Value = i.Id.ToString(),
+                    });
+                return View(resortNumberVM);
+            }
+
+            return NotFound();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteResortNumber(ResortNumberDeleteVM model)
+        {
+            var response = await _resortNumberService.DeleteAsync<APIResponse>(model.ResortNumber.ResortNo);
+            if (response != null && response.IsSuccess)
+            {
+                return RedirectToAction(nameof(IndexResortNumber));
+            }
+            return View(model);
+        }
     }
 }
