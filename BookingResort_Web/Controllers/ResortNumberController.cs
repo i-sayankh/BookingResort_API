@@ -62,6 +62,13 @@ namespace BookingResort_Web.Controllers
                 {
                     return RedirectToAction(nameof(IndexResortNumber));
                 }
+                else
+                {
+                    if(response.ErrorMessages.Count > 0)
+                    {
+                        ModelState.AddModelError("ErrorMessages", response.ErrorMessages.FirstOrDefault());
+                    }
+                }
             }
 
             var resp = await _resortService.GetAllAsync<APIResponse>();
