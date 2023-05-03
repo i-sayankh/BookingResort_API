@@ -11,5 +11,6 @@ namespace BookingResort_ResortAPI.Data
 		}
 		public DbSet<Resort> Resorts { get; set; }
 		public DbSet<ResortNumber> ResortNumbers { get; set; }
+		public DbSet<LocalUser> LocalUsers { get; set; }
 	}
 }
