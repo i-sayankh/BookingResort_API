@@ -27,7 +27,9 @@ namespace BookingResort_ResortAPI.Controllers
 
 		[HttpGet]
 		[Authorize]
-		[ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
 		public async Task<ActionResult<APIResponse>> GetResorts()
 		{
 			try
@@ -47,6 +49,8 @@ namespace BookingResort_ResortAPI.Controllers
 
 		[HttpGet("{id:int}", Name = "GetResort")]
         [Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -129,7 +133,9 @@ namespace BookingResort_ResortAPI.Controllers
 		[HttpDelete("{id:int}", Name = "DeleteResort")]
         [Authorize(Roles = "CUSTOM")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<ActionResult<APIResponse>> DeleteResort(int id)
 		{
