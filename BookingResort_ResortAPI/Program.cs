@@ -2,7 +2,10 @@ using BookingResort_ResortAPI;
 using BookingResort_ResortAPI.Data;
 using BookingResort_ResortAPI.Repository;
 using BookingResort_ResortAPI.Repository.IRepository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,26 @@ builder.Services.AddScoped<IResortRepository, ResortRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IResortNumberRepository, ResortNumberRepository>();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
+
+var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
+
+builder.Services.AddAuthentication(options =>
+{
+	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+	options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+	x.RequireHttpsMetadata = false;
+	x.SaveToken = true;
+	x.TokenValidationParameters = new TokenValidationParameters
+	{
+		ValidateIssuerSigningKey = true,
+		IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+		ValidateIssuer = false,
+		ValidateAudience= false
+	};
+});
+
 builder.Services.AddControllers(option => {
 	//option.ReturnHttpNotAcceptable=true;
 }).AddNewtonsoftJson().AddXmlDataContractSerializerFormatters();
@@ -31,7 +54,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
