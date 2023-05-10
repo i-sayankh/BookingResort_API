@@ -14,6 +14,9 @@ builder.Services.AddScoped<IResortService, ResortService>();
 builder.Services.AddHttpClient<IResortNumberService, ResortNumberService>();
 builder.Services.AddScoped<IResortNumberService, ResortNumberService>();
 
+builder.Services.AddHttpClient<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
