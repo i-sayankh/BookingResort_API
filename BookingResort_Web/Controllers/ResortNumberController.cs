@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BookingResort_Utility;
 using BookingResort_Web.Models;
 using BookingResort_Web.Models.DTO;
 using BookingResort_Web.Models.VM;
@@ -29,7 +30,7 @@ namespace BookingResort_Web.Controllers
         public async Task<IActionResult> IndexResortNumber()
         {
             List<ResortNumberDTO> list = new();
-            var response = await _resortNumberService.GetAllAsync<APIResponse>();
+            var response = await _resortNumberService.GetAllAsync<APIResponse>(HttpContext.Session.GetString(SD.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 list = JsonConvert.DeserializeObject<List<ResortNumberDTO>>(Convert.ToString(response.Result));
@@ -41,7 +42,7 @@ namespace BookingResort_Web.Controllers
         public async Task<IActionResult> CreateResortNumber()
         {
             ResortNumberCreateVM resortNumberVM = new();
-            var response = await _resortService.GetAllAsync<APIResponse>();
+            var response = await _resortService.GetAllAsync<APIResponse>(HttpContext.Session.GetString(SD.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 resortNumberVM.ResortList = JsonConvert.DeserializeObject<List<ResortDTO>>
@@ -61,7 +62,7 @@ namespace BookingResort_Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _resortNumberService.CreateAsync<APIResponse>(model.ResortNumber);
+                var response = await _resortNumberService.CreateAsync<APIResponse>(model.ResortNumber, HttpContext.Session.GetString(SD.SessionToken));
                 if (response != null && response.IsSuccess)
                 {
                     TempData["success"] = "Resort Number Created Sucessfully";
@@ -77,7 +78,7 @@ namespace BookingResort_Web.Controllers
                 }
             }
 
-            var resp = await _resortService.GetAllAsync<APIResponse>();
+            var resp = await _resortService.GetAllAsync<APIResponse>(HttpContext.Session.GetString(SD.SessionToken));
             if (resp != null && resp.IsSuccess)
             {
                 model.ResortList = JsonConvert.DeserializeObject<List<ResortDTO>>
@@ -94,14 +95,14 @@ namespace BookingResort_Web.Controllers
         public async Task<IActionResult> UpdateResortNumber(int resortNo)
         {
             ResortNumberUpdateVM resortNumberVM = new();
-            var response = await _resortNumberService.GetAsync<APIResponse>(resortNo);
+            var response = await _resortNumberService.GetAsync<APIResponse>(resortNo, HttpContext.Session.GetString(SD.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 ResortNumberDTO model = JsonConvert.DeserializeObject<ResortNumberDTO>(Convert.ToString(response.Result));
                 resortNumberVM.ResortNumber = _mapper.Map<ResortNumberUpdateDTO>(model);
             }
 
-            response = await _resortService.GetAllAsync<APIResponse>();
+            response = await _resortService.GetAllAsync<APIResponse>(HttpContext.Session.GetString(SD.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 resortNumberVM.ResortList = JsonConvert.DeserializeObject<List<ResortDTO>>
@@ -123,7 +124,7 @@ namespace BookingResort_Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _resortNumberService.UpdateAsync<APIResponse>(model.ResortNumber);
+                var response = await _resortNumberService.UpdateAsync<APIResponse>(model.ResortNumber, HttpContext.Session.GetString(SD.SessionToken));
                 if (response != null && response.IsSuccess)
                 {
                     TempData["success"] = "Resort Number Updated Sucessfully";
@@ -139,7 +140,7 @@ namespace BookingResort_Web.Controllers
                 }
             }
 
-            var resp = await _resortService.GetAllAsync<APIResponse>();
+            var resp = await _resortService.GetAllAsync<APIResponse>(HttpContext.Session.GetString(SD.SessionToken));
             if (resp != null && resp.IsSuccess)
             {
                 model.ResortList = JsonConvert.DeserializeObject<List<ResortDTO>>
@@ -156,14 +157,14 @@ namespace BookingResort_Web.Controllers
         public async Task<IActionResult> DeleteResortNumber(int resortNo)
         {
             ResortNumberDeleteVM resortNumberVM = new();
-            var response = await _resortNumberService.GetAsync<APIResponse>(resortNo);
+            var response = await _resortNumberService.GetAsync<APIResponse>(resortNo, HttpContext.Session.GetString(SD.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 ResortNumberDTO model = JsonConvert.DeserializeObject<ResortNumberDTO>(Convert.ToString(response.Result));
                 resortNumberVM.ResortNumber = model;
             }
 
-            response = await _resortService.GetAllAsync<APIResponse>();
+            response = await _resortService.GetAllAsync<APIResponse>(HttpContext.Session.GetString(SD.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 resortNumberVM.ResortList = JsonConvert.DeserializeObject<List<ResortDTO>>
@@ -183,7 +184,7 @@ namespace BookingResort_Web.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteResortNumber(ResortNumberDeleteVM model)
         {
-            var response = await _resortNumberService.DeleteAsync<APIResponse>(model.ResortNumber.ResortNo);
+            var response = await _resortNumberService.DeleteAsync<APIResponse>(model.ResortNumber.ResortNo, HttpContext.Session.GetString(SD.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Resort Number Deleted Sucessfully";

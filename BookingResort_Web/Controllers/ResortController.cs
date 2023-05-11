@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BookingResort_Utility;
 using BookingResort_Web.Models;
 using BookingResort_Web.Models.DTO;
 using BookingResort_Web.Services.IServices;
@@ -24,7 +25,7 @@ namespace BookingResort_Web.Controllers
 		public async Task<IActionResult> IndexResort()
 		{
 			List<ResortDTO> list = new();
-			var response = await _resortService.GetAllAsync<APIResponse>();
+			var response = await _resortService.GetAllAsync<APIResponse>(HttpContext.Session.GetString(SD.SessionToken));
 			if(response != null && response.IsSuccess)
 			{
 				list = JsonConvert.DeserializeObject<List<ResortDTO>>(Convert.ToString(response.Result));
@@ -45,7 +46,7 @@ namespace BookingResort_Web.Controllers
         {
             if(ModelState.IsValid)
 			{
-                var response = await _resortService.CreateAsync<APIResponse>(model);
+                var response = await _resortService.CreateAsync<APIResponse>(model, HttpContext.Session.GetString(SD.SessionToken));
                 if (response != null && response.IsSuccess)
 				{
                     TempData["success"] = "Resort Created Successfully";
@@ -59,7 +60,7 @@ namespace BookingResort_Web.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateResort(int resortId)
         {
-            var response = await _resortService.GetAsync<APIResponse>(resortId);
+            var response = await _resortService.GetAsync<APIResponse>(resortId, HttpContext.Session.GetString(SD.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 ResortDTO model = JsonConvert.DeserializeObject<ResortDTO>(Convert.ToString(response.Result));
@@ -75,7 +76,7 @@ namespace BookingResort_Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _resortService.UpdateAsync<APIResponse>(model);
+                var response = await _resortService.UpdateAsync<APIResponse>(model, HttpContext.Session.GetString(SD.SessionToken));
                 if (response != null && response.IsSuccess)
                 {
                     TempData["success"] = "Resort Updated Successfully";
@@ -89,7 +90,7 @@ namespace BookingResort_Web.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteResort(int resortId)
         {
-            var response = await _resortService.GetAsync<APIResponse>(resortId);
+            var response = await _resortService.GetAsync<APIResponse>(resortId, HttpContext.Session.GetString(SD.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 ResortDTO model = JsonConvert.DeserializeObject<ResortDTO>(Convert.ToString(response.Result));
@@ -103,7 +104,7 @@ namespace BookingResort_Web.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteResort(ResortDTO model)
         {
-            var response = await _resortService.DeleteAsync<APIResponse>(model.Id);
+            var response = await _resortService.DeleteAsync<APIResponse>(model.Id, HttpContext.Session.GetString(SD.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Resort Deleted Successfully";

@@ -3,10 +3,12 @@ using BookingResort_ResortAPI.Data;
 using BookingResort_ResortAPI.Models;
 using BookingResort_ResortAPI.Models.DTO;
 using BookingResort_ResortAPI.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using System.Net;
 
 namespace BookingResort_ResortAPI.Controllers
@@ -77,7 +79,8 @@ namespace BookingResort_ResortAPI.Controllers
 		}
 
 		[HttpPost]
-		[ProducesResponseType(StatusCodes.Status201Created)]
+        [Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<APIResponse>> CreateResortNumber([FromBody] ResortNumberCreateDTO createDTO)
@@ -117,7 +120,8 @@ namespace BookingResort_ResortAPI.Controllers
 		}
 
 		[HttpDelete("{id:int}", Name = "DeleteResortNumber")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
+        [Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<ActionResult<APIResponse>> DeleteResortNumber(int id)
@@ -150,7 +154,8 @@ namespace BookingResort_ResortAPI.Controllers
 		}
 
 		[HttpPut("{id:int}", Name = "UpdateResortNumber")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
+        [Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<ActionResult<APIResponse>> UpdateResortNumber(int id, [FromBody] ResortNumberUpdateDTO updateDTO)
 		{

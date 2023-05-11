@@ -15,50 +15,55 @@ namespace BookingResort_Web.Services
 			resortUrl = configuration.GetValue<string>("ServiceUrls:ResortAPI");
 		}
 
-		public Task<T> CreateAsync<T>(ResortCreateDTO dto)
+		public Task<T> CreateAsync<T>(ResortCreateDTO dto, string token)
 		{
 			return SendAsync<T>(new APIRequest()
 			{
 				ApiType = SD.ApiType.POST,
 				Data = dto,
-				Url= resortUrl+ "/api/ResortAPI"
-			});
+				Url= resortUrl+ "/api/ResortAPI",
+                Token = token
+            });
 		}
 
-		public Task<T> DeleteAsync<T>(int id)
+		public Task<T> DeleteAsync<T>(int id, string token)
 		{
 			return SendAsync<T>(new APIRequest()
 			{
 				ApiType = SD.ApiType.DELETE,
-				Url = resortUrl + "/api/ResortAPI/"+id
-			});
+				Url = resortUrl + "/api/ResortAPI/"+id,
+                Token = token
+            });
 		}
 
-		public Task<T> GetAllAsync<T>()
+		public Task<T> GetAllAsync<T>(string token)
 		{
 			return SendAsync<T>(new APIRequest()
 			{
 				ApiType = SD.ApiType.GET,
-				Url = resortUrl + "/api/ResortAPI"
-			});
+				Url = resortUrl + "/api/ResortAPI",
+                Token = token
+            });
 		}
 
-		public Task<T> GetAsync<T>(int id)
+		public Task<T> GetAsync<T>(int id, string token)
 		{
 			return SendAsync<T>(new APIRequest()
 			{
 				ApiType = SD.ApiType.GET,
-				Url = resortUrl + "/api/ResortAPI/" + id
-			});
+				Url = resortUrl + "/api/ResortAPI/" + id,
+                Token = token
+            });
 		}
 
-		public Task<T> UpdateAsync<T>(ResortUpdateDTO dto)
+		public Task<T> UpdateAsync<T>(ResortUpdateDTO dto, string token)
 		{
 			return SendAsync<T>(new APIRequest()
 			{
 				ApiType = SD.ApiType.PUT,
 				Data = dto,
-				Url = resortUrl + "/api/ResortAPI/" + dto.Id
+				Url = resortUrl + "/api/ResortAPI/" + dto.Id,
+				Token = token
 			});
 		}
 	}

@@ -26,7 +26,6 @@ namespace BookingResort_ResortAPI.Controllers
 		}
 
 		[HttpGet]
-		[Authorize]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -48,7 +47,6 @@ namespace BookingResort_ResortAPI.Controllers
 		}
 
 		[HttpGet("{id:int}", Name = "GetResort")]
-        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -131,7 +129,7 @@ namespace BookingResort_ResortAPI.Controllers
 		}
 
 		[HttpDelete("{id:int}", Name = "DeleteResort")]
-        [Authorize(Roles = "CUSTOM")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -169,7 +167,8 @@ namespace BookingResort_ResortAPI.Controllers
 		[HttpPut("{id:int}", Name = "UpdateResort")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<ActionResult<APIResponse>> UpdateResort(int id, [FromBody] ResortUpdateDTO updateDTO)
+        [Authorize(Roles = "admin")]
+        public async Task<ActionResult<APIResponse>> UpdateResort(int id, [FromBody] ResortUpdateDTO updateDTO)
 		{
 			try
 			{
