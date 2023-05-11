@@ -2,6 +2,7 @@
 using BookingResort_Web.Models;
 using BookingResort_Web.Models.DTO;
 using BookingResort_Web.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -31,6 +32,7 @@ namespace BookingResort_Web.Controllers
 			return View(list);
 		}
 
+        [Authorize(Roles ="admin")]
         public async Task<IActionResult> CreateResort()
         {            
             return View();
@@ -38,6 +40,7 @@ namespace BookingResort_Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> CreateResort(ResortCreateDTO model)
         {
             if(ModelState.IsValid)
@@ -53,6 +56,7 @@ namespace BookingResort_Web.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateResort(int resortId)
         {
             var response = await _resortService.GetAsync<APIResponse>(resortId);
@@ -66,6 +70,7 @@ namespace BookingResort_Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateResort(ResortUpdateDTO model)
         {
             if (ModelState.IsValid)
@@ -81,6 +86,7 @@ namespace BookingResort_Web.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteResort(int resortId)
         {
             var response = await _resortService.GetAsync<APIResponse>(resortId);
@@ -94,6 +100,7 @@ namespace BookingResort_Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteResort(ResortDTO model)
         {
             var response = await _resortService.DeleteAsync<APIResponse>(model.Id);

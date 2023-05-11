@@ -1,6 +1,7 @@
 using BookingResort_Web;
 using BookingResort_Web.Services;
 using BookingResort_Web.Services.IServices;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,15 @@ builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddDistributedMemoryCache();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).
+	AddCookie(options =>
+	{
+		options.Cookie.HttpOnly = true;
+		options.ExpireTimeSpan= TimeSpan.FromMinutes(30);
+		options.LoginPath= "/Auth/Login";
+		options.AccessDeniedPath= "/Auth/AcceessDenied";
+		options.SlidingExpiration = true;
+	});
 builder.Services.AddSession(options =>
 {
 	options.IdleTimeout= TimeSpan.FromMinutes(100);
@@ -41,6 +51,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

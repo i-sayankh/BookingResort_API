@@ -4,10 +4,12 @@ using BookingResort_Web.Models.DTO;
 using BookingResort_Web.Models.VM;
 using BookingResort_Web.Services;
 using BookingResort_Web.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Data;
 
 namespace BookingResort_Web.Controllers
 {
@@ -35,6 +37,7 @@ namespace BookingResort_Web.Controllers
             return View(list);
         }
 
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> CreateResortNumber()
         {
             ResortNumberCreateVM resortNumberVM = new();
@@ -53,6 +56,7 @@ namespace BookingResort_Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> CreateResortNumber(ResortNumberCreateVM model)
         {
             if (ModelState.IsValid)
@@ -86,6 +90,7 @@ namespace BookingResort_Web.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateResortNumber(int resortNo)
         {
             ResortNumberUpdateVM resortNumberVM = new();
@@ -113,6 +118,7 @@ namespace BookingResort_Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateResortNumber(ResortNumberUpdateVM model)
         {
             if (ModelState.IsValid)
@@ -146,6 +152,7 @@ namespace BookingResort_Web.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteResortNumber(int resortNo)
         {
             ResortNumberDeleteVM resortNumberVM = new();
@@ -173,6 +180,7 @@ namespace BookingResort_Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteResortNumber(ResortNumberDeleteVM model)
         {
             var response = await _resortNumberService.DeleteAsync<APIResponse>(model.ResortNumber.ResortNo);
