@@ -14,6 +14,8 @@ builder.Services.AddScoped<IResortService, ResortService>();
 builder.Services.AddHttpClient<IResortNumberService, ResortNumberService>();
 builder.Services.AddScoped<IResortNumberService, ResortNumberService>();
 
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 

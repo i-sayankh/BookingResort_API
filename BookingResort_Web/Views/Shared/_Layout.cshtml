@@ -1,16 +1,19 @@
-﻿<!DOCTYPE html>
+﻿@using BookingResort_Utility;
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor httpAcc
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BookingResort_Web</title>
-    <link rel="stylesheet" href="~/css/bootstrap.css"/>
+    <link rel="stylesheet" href="~/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BookingResort_Web.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
 </head>
 <body>
-    <partial name="_Notification"/>
+    <partial name="_Notification" />
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark box-shadow mb-3">
             <div class="container-fluid">
@@ -21,9 +24,11 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Resort" asp-action="IndexResort">Resort</a>
                         </li>
@@ -31,6 +36,25 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="ResortNumber" asp-action="IndexResortNumber">Resort Number</a>
                         </li>
+
+                        @if (httpAcc.HttpContext.Session.GetString(SD.SessionToken) != null &&
+                        httpAcc.HttpContext.Session.GetString(SD.SessionToken).ToString().Length > 0)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">Login</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Register">Register</a>
+                            </li>
+                        }
+
                     </ul>
                 </div>
             </div>
