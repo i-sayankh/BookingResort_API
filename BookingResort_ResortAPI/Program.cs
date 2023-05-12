@@ -3,6 +3,7 @@ using BookingResort_ResortAPI.Data;
 using BookingResort_ResortAPI.Repository;
 using BookingResort_ResortAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -19,6 +20,11 @@ builder.Services.AddScoped<IResortRepository, ResortRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IResortNumberRepository, ResortNumberRepository>();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
+builder.Services.AddApiVersioning(options =>
+{
+	options.AssumeDefaultVersionWhenUnspecified = true;
+	options.DefaultApiVersion = new ApiVersion(1, 0);
+});
 
 var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 
