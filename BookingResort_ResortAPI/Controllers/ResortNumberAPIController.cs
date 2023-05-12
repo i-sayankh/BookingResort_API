@@ -15,6 +15,7 @@ namespace BookingResort_ResortAPI.Controllers
 {
 	[Route("api/ResortNumberAPI")]
 	[ApiController]
+	//[ApiVersion("1.0")]
 	public class ResortNumberAPIController : ControllerBase
 	{
 		protected APIResponse _response;
