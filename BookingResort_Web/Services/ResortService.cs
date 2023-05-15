@@ -21,7 +21,7 @@ namespace BookingResort_Web.Services
 			{
 				ApiType = SD.ApiType.POST,
 				Data = dto,
-				Url= resortUrl+ "/api/ResortAPI",
+				Url= resortUrl+ "/api/v1/ResortAPI",
                 Token = token
             });
 		}
@@ -31,7 +31,7 @@ namespace BookingResort_Web.Services
 			return SendAsync<T>(new APIRequest()
 			{
 				ApiType = SD.ApiType.DELETE,
-				Url = resortUrl + "/api/ResortAPI/"+id,
+				Url = resortUrl + "/api/v1/ResortAPI/" + id,
                 Token = token
             });
 		}
@@ -41,7 +41,7 @@ namespace BookingResort_Web.Services
 			return SendAsync<T>(new APIRequest()
 			{
 				ApiType = SD.ApiType.GET,
-				Url = resortUrl + "/api/ResortAPI",
+				Url = resortUrl + "/api/v1/ResortAPI",
                 Token = token
             });
 		}
@@ -51,7 +51,7 @@ namespace BookingResort_Web.Services
 			return SendAsync<T>(new APIRequest()
 			{
 				ApiType = SD.ApiType.GET,
-				Url = resortUrl + "/api/ResortAPI/" + id,
+				Url = resortUrl + "/api/v1/ResortAPI/" + id,
                 Token = token
             });
 		}
@@ -62,7 +62,7 @@ namespace BookingResort_Web.Services
 			{
 				ApiType = SD.ApiType.PUT,
 				Data = dto,
-				Url = resortUrl + "/api/ResortAPI/" + dto.Id,
+				Url = resortUrl + "/api/v1/ResortAPI/" + dto.Id,
 				Token = token
 			});
 		}

@@ -22,7 +22,7 @@ namespace BookingResort_Web.Services
             {
                 ApiType = SD.ApiType.POST,
                 Data = obj,
-                Url = resortUrl + "/api/UsersAuth/login"
+                Url = resortUrl + "/api/v1/UsersAuth/login"
             });
         }
 
@@ -32,7 +32,7 @@ namespace BookingResort_Web.Services
             {
                 ApiType = SD.ApiType.POST,
                 Data = obj,
-                Url = resortUrl + "/api/UsersAuth/registration"
+                Url = resortUrl + "/api/v1/UsersAuth/registration"
             });
         }
     }
