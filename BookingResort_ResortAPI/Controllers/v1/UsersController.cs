@@ -4,10 +4,11 @@ using BookingResort_ResortAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace BookingResort_ResortAPI.Controllers
+namespace BookingResort_ResortAPI.Controllers.v1
 {
-    [Route("api/UsersAuth")]
+    [Route("api/v{version:apiVersion}/UsersAuth")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class UsersController : Controller
     {
         private readonly IUserRepository _userRepository;
@@ -15,16 +16,16 @@ namespace BookingResort_ResortAPI.Controllers
         public UsersController(IUserRepository userRepository)
         {
             _userRepository = userRepository;
-            this._apiResponse = new();
+            _apiResponse = new();
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
         {
             var loginResponse = await _userRepository.Login(model);
-            if(loginResponse.User == null || string.IsNullOrEmpty(loginResponse.Token))
+            if (loginResponse.User == null || string.IsNullOrEmpty(loginResponse.Token))
             {
                 _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                _apiResponse.IsSuccess= false;
+                _apiResponse.IsSuccess = false;
                 _apiResponse.ErrorMessages.Add("Username or Password is Incorrect!!!");
                 return BadRequest(_apiResponse);
             }
@@ -37,7 +38,7 @@ namespace BookingResort_ResortAPI.Controllers
         public async Task<IActionResult> Registration([FromBody] RegistrationRequestDTO model)
         {
             bool ifUsernameUnique = _userRepository.IsUniqueUser(model.Username);
-            if(!ifUsernameUnique)
+            if (!ifUsernameUnique)
             {
                 _apiResponse.StatusCode = HttpStatusCode.BadRequest;
                 _apiResponse.IsSuccess = false;
@@ -46,7 +47,7 @@ namespace BookingResort_ResortAPI.Controllers
             }
 
             var user = await _userRepository.Register(model);
-            if(user == null)
+            if (user == null)
             {
                 _apiResponse.StatusCode = HttpStatusCode.BadRequest;
                 _apiResponse.IsSuccess = false;
