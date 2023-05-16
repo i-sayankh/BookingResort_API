@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Text.Json;
 
 namespace BookingResort_ResortAPI.Controllers.v1
 {
@@ -27,14 +28,32 @@ namespace BookingResort_ResortAPI.Controllers.v1
         }
 
         [HttpGet]
+        [ResponseCache(CacheProfileName = "Default30")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<APIResponse>> GetResorts()
+        public async Task<ActionResult<APIResponse>> GetResorts([FromQuery(Name ="filterOccupancy")] int? occupancy, 
+            [FromQuery] string? search, int pageSize = 0, int pageNumber = 1)
         {
             try
             {
-                IEnumerable<Resort> resortList = await _dbResort.GetAllAsync();
+                IEnumerable<Resort> resortList;
+                if (occupancy > 0)
+                {
+                    resortList = await _dbResort.GetAllAsync(u => u.Occupancy == occupancy,
+                        pageSize:pageSize, pageNumber:pageNumber);
+                }
+                else
+                {
+                    resortList = await _dbResort.GetAllAsync(pageSize: pageSize, pageNumber: pageNumber);
+                }  
+                if(!string.IsNullOrEmpty(search))
+                {
+                    resortList = resortList.Where(u => u.Amenity.ToLower().Contains(search.ToLower()) 
+                    || u.Name.ToLower().Contains(search.ToLower()));
+                }
+                Pagination pagination= new() { PageNumber = pageNumber, PageSize = pageSize};
+                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagination));
                 _response.Result = _mapper.Map<List<ResortDTO>>(resortList);
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
@@ -47,14 +66,15 @@ namespace BookingResort_ResortAPI.Controllers.v1
             return _response;
         }
 
-        [HttpGet("{id:int}", Name = "GetResort")]
+        [HttpGet("{id:int}", Name = "GetResort")]        
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesResponseType(200, Type = typeof(ResortDTO))]		
-        public async Task<ActionResult<APIResponse>> GetResort(int id)
+        //[ProducesResponseType(200, Type = typeof(ResortDTO))]	
+        //[ResponseCache(Location =ResponseCacheLocation.None, NoStore =true)]	
+        public async Task<ActionResult<APIResponse>> GetResort(int id, int pageSize = 3, int pageNumber = 1)
         {
             try
             {
