@@ -1,8 +1,10 @@
 using BookingResort_ResortAPI;
 using BookingResort_ResortAPI.Data;
+using BookingResort_ResortAPI.Models;
 using BookingResort_ResortAPI.Repository;
 using BookingResort_ResortAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +18,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
 {
 	option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
 });
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>().
+	AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddResponseCaching();
 builder.Services.AddScoped<IResortRepository, ResortRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
