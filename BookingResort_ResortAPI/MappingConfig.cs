@@ -15,6 +15,7 @@ namespace BookingResort_ResortAPI
 			CreateMap<ResortNumber, ResortNumberDTO>().ReverseMap();
 			CreateMap<ResortNumber, ResortNumberCreateDTO>().ReverseMap();
 			CreateMap<ResortNumber, ResortNumberUpdateDTO>().ReverseMap();
+			CreateMap<ApplicationUser, UserDTO>().ReverseMap();
 		}
 	}
 }
