@@ -76,19 +76,32 @@ namespace BookingResort_ResortAPI.Repository
             return loginResponseDTO;
         }
 
-        public async Task<LocalUser> Register(RegistrationRequestDTO registrationRequestDTO)
+        public async Task<UserDTO> Register(RegistrationRequestDTO registrationRequestDTO)
         {
-            LocalUser user = new LocalUser
+            ApplicationUser user = new()
             {
                 UserName = registrationRequestDTO.Username,
-                Password = registrationRequestDTO.Password,
+                Email = registrationRequestDTO.Username,
+                NormalizedEmail = registrationRequestDTO.Username.ToUpper(),
                 Name = registrationRequestDTO.Name,
-                Role = registrationRequestDTO.Role
             };
-            _db.LocalUsers.Add(user);
-            await _db.SaveChangesAsync();
-            user.Password = "";
-            return user;
+
+            try
+            {
+                var result = await _userManager.CreateAsync(user, registrationRequestDTO.Password);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, "admin");
+                    var userToReturn = _db.ApplicationUsers.
+                        FirstOrDefault(u => u.UserName == registrationRequestDTO.Username);
+                    return _mapper.Map<UserDTO>(userToReturn);
+                }
+            } 
+            catch (Exception ex)
+            {
+
+            }
+            return new UserDTO();
         }
     }
 }
